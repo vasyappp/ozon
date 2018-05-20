@@ -2,24 +2,23 @@ package Pages;
 
 import Utils.Cart;
 import org.junit.Assert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Описание страницы Корзины сайта
  */
 public class CartPage extends BasePage {
 
-    @FindBy(xpath = ".//div[@class = 'eCartSplitItems']//div[contains(@class, 'bCartItem')]")
-    List<WebElement> products; // Список продуктов в корзине
-
-    @FindBy(xpath = ".//div[contains(@class, 'RemoveAll')]")
+    @FindBy(xpath = ".//div[contains(@class, 'RemoveAll')]//..")
     WebElement removeAllButton; // Кнопка "Удалить все"
 
     @FindBy(xpath = ".//div[@class = 'eRemovedCartItems_removeAll jsRemoveAll']")
@@ -36,6 +35,12 @@ public class CartPage extends BasePage {
      */
     private List<String> getAllProductNames() {
         List<String> productNames = new ArrayList<>();
+
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath(".//div[@class = 'eCartControls_infoDate']"))));
+
+        List<WebElement> products = driver.findElements(By.xpath
+                (".//div[@class = 'eCartSplitItems']//div[contains(@class, 'bCartItem')]"));
 
         for (WebElement product : products) {
             String productName = product.findElement(By.xpath
@@ -70,18 +75,55 @@ public class CartPage extends BasePage {
      *
      */
     public void removeAll() {
-        scrollToElement(removeAllButton);
-        removeAllButton.click();
+        // Xpathы к кнопкам удаления товаров
+        String removeAllButtonXpath1 = ".//div[@class = 'eCartControls_buttons']";
+        String removeAllButtonXpath2 = ".//div[contains(@class, 'RemoveAll')]";
+        // Xpathы к закрытию окошка с информацией об удаленных товарах
+        String removingInfoCloseButtonXpath = ".//div[@class = 'eRemovedCartItems_removeAll jsRemoveAll']";
 
-        waitVisibility(removingInfoCloseButton);
-        try {
-            removingInfoCloseButton.click();
-        } catch (WebDriverException e){
-            JavascriptExecutor executor = (JavascriptExecutor) driver;
-            executor.executeScript("arguments[0].click()", removingInfoCloseButton);
+        WebElement removeAllButton;
+        WebElement removingInfoCloseButton;
+
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+
+        while (true) {
+            try {
+                removeAllButton = driver.findElement(By.xpath(removeAllButtonXpath1));
+            } catch (NoSuchElementException e) {
+                driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
+                return;
+            }
+
+            scrollToElement(removeAllButton);
+
+            WebDriverWait wait = new WebDriverWait(driver, 10);
+            wait.until(ExpectedConditions.elementToBeClickable(removeAllButton));
+
+            try {
+                removeAllButton.click();
+            } catch (WebDriverException e) {
+                Actions actions = new Actions(driver);
+                actions.moveToElement(removeAllButton).click().build().perform();
+            }
+
+            try {
+                removingInfoCloseButton = driver.findElement(By.xpath
+                        (removingInfoCloseButtonXpath));
+            } catch (Exception e) {
+                driver.findElement(By.xpath(removeAllButtonXpath2)).click();
+                removingInfoCloseButton = driver.findElement(By.xpath
+                        (removingInfoCloseButtonXpath));
+            }
+
+            waitVisibility(removingInfoCloseButton);
+
+            try {
+                removingInfoCloseButton.click();
+            } catch (WebDriverException e) {
+                JavascriptExecutor executor = (JavascriptExecutor) driver;
+                executor.executeScript("arguments[0].click()", removingInfoCloseButton);
+            }
         }
-
-        Cart.getInstance().clearCart();
     }
 
     /**
@@ -89,7 +131,7 @@ public class CartPage extends BasePage {
      *
      * @return Пуста ли корзина
      */
-    public boolean isCartEmpty() {
+    public Boolean isCartEmpty() {
         return title.getText().contains("пуста");
     }
 }

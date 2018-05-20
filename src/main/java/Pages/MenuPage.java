@@ -1,5 +1,6 @@
 package Pages;
 
+import Steps.BaseSteps;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -29,6 +30,6 @@ public class MenuPage extends BasePage {
      */
     public void goToCart() {
         scrollToElement(cartButton);
-        cartButton.click();
+        click(cartButton);
     }
 }

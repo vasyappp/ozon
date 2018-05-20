@@ -1,5 +1,6 @@
 package Pages;
 
+import Steps.BaseSteps;
 import org.junit.Assert;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -30,7 +31,7 @@ public class ProductParametersPage extends BasePage {
         for (WebElement brandOption : brands) {
             if (brandOption.getText().contains(brandName)) {
                 scrollToElement(brandOption);
-                brandOption.click();
+                click(brandOption);
 
                 return;
             }
@@ -45,7 +46,10 @@ public class ProductParametersPage extends BasePage {
      * @param startingPrice Начальная цена
      */
     public void setStartingPrice(String startingPrice) {
+        waitVisibility(priceInputFrom);
         fillField(priceInputFrom, startingPrice);
-        applyButton.click();
+
+        waitVisibility(applyButton);
+        click(applyButton);
     }
 }

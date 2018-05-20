@@ -1,5 +1,6 @@
 package Steps;
 
+import Utils.Cart;
 import Utils.TestProperties;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
@@ -38,6 +39,8 @@ public class BaseSteps {
         driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
         driver.manage().window().maximize();
         driver.get(baseUrl);
+
+        Cart.getInstance().clearCart();
     }
 
     @After

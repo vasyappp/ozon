@@ -25,10 +25,11 @@ public class ProductPage extends BasePage {
      */
     public void addToCart() {
         try {
-            click(addToCartButton);
-        } catch (WebDriverException e) {
-            scrollToElement(ozonScore);
             addToCartButton.click();
+        } catch (WebDriverException e) {
+            waitVisibility(ozonScore);
+            scrollToElement(ozonScore);
+            click(addToCartButton);
         }
 
         Cart.getInstance().putProductName(productName.getText());

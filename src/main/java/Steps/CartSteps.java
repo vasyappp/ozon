@@ -3,6 +3,9 @@ package Steps;
 import Pages.CartPage;
 import io.qameta.allure.Step;
 import org.junit.Assert;
+import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Описание шагов для страницы Корзины
@@ -21,6 +24,15 @@ public class CartSteps {
 
     @Step("Корзина пуста")
     public void stepIsCartEmpty() {
-        Assert.assertTrue("Корзина не пуста", new CartPage().isCartEmpty());
+        WebDriverWait wait = new WebDriverWait(BaseSteps.getDriver(), 10);
+
+        try {
+            wait.until((ExpectedCondition<Boolean>) driver -> {
+                Boolean isCartEmpty = new CartPage().isCartEmpty();
+                return isCartEmpty;
+            });
+        } catch (TimeoutException e) {
+            Assert.fail("Корзина не пуста");
+        }
     }
 }

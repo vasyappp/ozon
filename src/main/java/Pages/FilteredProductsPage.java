@@ -23,7 +23,8 @@ public class FilteredProductsPage extends BasePage {
     public void goToProduct(WebElement product) {
         WebElement productName = product.findElement(By.xpath
                 (".//div[@itemprop = 'name']"));
-        productName.click();
+        scrollToElement(productName);
+        click(productName);
     }
 
     /**

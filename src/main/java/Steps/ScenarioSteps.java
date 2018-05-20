@@ -4,6 +4,8 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import org.junit.Assert;
 
+import java.util.List;
+
 public class ScenarioSteps {
     MenuSteps menuSteps = new MenuSteps();
     SectionSteps sectionSteps = new SectionSteps();
@@ -23,12 +25,16 @@ public class ScenarioSteps {
     }
 
     @When("^выбраны производители \"(.+)\"$")
-    public void selectBrands(String brands) {
+    public void selectBrands(List<String> brands) {
+        for (String brand : brands)
+            productParametersSteps.stepSelectBrand(brand);
+        /*
         String[] splittedBrands = brands.split(", ");
 
         for (String brand : splittedBrands) {
             productParametersSteps.stepSelectBrand(brand);
         }
+        */
     }
 
     @When("^выставлена начальная цена \"(.+)\"$")

@@ -8,7 +8,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.List;
@@ -23,7 +22,6 @@ public class BasePage {
 
     public BasePage() {
         PageFactory.initElements(driver, this);
-        BaseSteps.closePopup();
     }
 
     /**
@@ -58,7 +56,7 @@ public class BasePage {
         for (WebElement item : collection) {
             if (item.getText().equalsIgnoreCase(itemName)) {
                 scrollToElement(item);
-                item.click();
+                click(item);
                 return;
             }
         }
@@ -99,14 +97,16 @@ public class BasePage {
     }
 
     /**
-     * Метод ожидает возможности кликнуть на элемент
+     * Метод закрывает рекламное окно, если требуется, и кликает на заданный элемент
      *
      * @param element Искомый элемент
      */
     public void click(WebElement element) {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(false);", element);
-        Wait<WebDriver> wait = new WebDriverWait(driver, 15);
-        wait.until(ExpectedConditions.elementToBeClickable(element));
-        element.click();
+        try {
+            element.click();
+        } catch (Exception e) {
+            BaseSteps.closePopup();
+            element.click();
+        }
     }
 }
