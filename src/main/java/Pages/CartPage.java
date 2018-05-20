@@ -75,14 +75,14 @@ public class CartPage extends BasePage {
      *
      */
     public void removeAll() {
-        String removeAllButtonXpath1 = ".//div[@class = 'eCartControls_buttons']";
+        String removeAllButtonXpath = ".//div[@class = 'eCartControls_buttons']";
         String removingInfoCloseButtonXpath = ".//div[@class = 'eRemovedCartItems_removeAll jsRemoveAll']";
 
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
         while (true) {
             try {
-                driver.findElement(By.xpath(removeAllButtonXpath1));
+                driver.findElement(By.xpath(removeAllButtonXpath));
             } catch (NoSuchElementException e) {
                 driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
                 return;
@@ -91,7 +91,7 @@ public class CartPage extends BasePage {
             WebDriverWait wait = new WebDriverWait(driver, 10);
             wait.until((ExpectedCondition<Boolean>) driver -> {
                 try {
-                    WebElement removeAllButton = driver.findElement(By.xpath(removeAllButtonXpath1));
+                    WebElement removeAllButton = driver.findElement(By.xpath(removeAllButtonXpath));
                     removeAllButton.click();
                     try {
                         driver.findElement(By.xpath(removingInfoCloseButtonXpath));

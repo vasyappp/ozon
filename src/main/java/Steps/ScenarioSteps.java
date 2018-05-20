@@ -28,13 +28,6 @@ public class ScenarioSteps {
     public void selectBrands(List<String> brands) {
         for (String brand : brands)
             productParametersSteps.stepSelectBrand(brand);
-        /*
-        String[] splittedBrands = brands.split(", ");
-
-        for (String brand : splittedBrands) {
-            productParametersSteps.stepSelectBrand(brand);
-        }
-        */
     }
 
     @When("^выставлена начальная цена \"(.+)\"$")

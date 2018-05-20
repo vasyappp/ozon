@@ -1,7 +1,9 @@
 package Pages;
 
 import Utils.Cart;
+import org.junit.Assert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -42,8 +44,13 @@ public class ProductPage extends BasePage {
         Integer expectedCartAmount = Cart.getInstance().getProductNames().size() + 1;
 
         WebDriverWait wait = new WebDriverWait(driver, 10);
-        wait.until(ExpectedConditions
-                .attributeToBe(actualCartAmount, "data-count", Integer.toString(expectedCartAmount)));
+
+        try {
+            wait.until(ExpectedConditions
+                    .attributeToBe(actualCartAmount, "data-count", Integer.toString(expectedCartAmount)));
+        } catch (TimeoutException e) {
+            Assert.fail("Продукт \"" + productName.getText() + "\" не был добавлен в Корзину");
+        }
 
         Cart.getInstance().putProductName(productName.getText());
     }

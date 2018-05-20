@@ -4,6 +4,8 @@ import Steps.BaseSteps;
 import org.junit.Assert;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.List;
 
@@ -46,7 +48,9 @@ public class ProductParametersPage extends BasePage {
      * @param startingPrice Начальная цена
      */
     public void setStartingPrice(String startingPrice) {
-        waitVisibility(priceInputFrom);
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        wait.until(ExpectedConditions.elementToBeClickable(priceInputFrom));
+
         fillField(priceInputFrom, startingPrice);
 
         waitVisibility(applyButton);
