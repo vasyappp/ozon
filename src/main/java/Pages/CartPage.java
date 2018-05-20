@@ -75,54 +75,45 @@ public class CartPage extends BasePage {
      *
      */
     public void removeAll() {
-        // Xpathы к кнопкам удаления товаров
         String removeAllButtonXpath1 = ".//div[@class = 'eCartControls_buttons']";
-        String removeAllButtonXpath2 = ".//div[contains(@class, 'RemoveAll')]";
-        // Xpathы к закрытию окошка с информацией об удаленных товарах
         String removingInfoCloseButtonXpath = ".//div[@class = 'eRemovedCartItems_removeAll jsRemoveAll']";
 
-        WebElement removeAllButton;
-        WebElement removingInfoCloseButton;
-
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
         while (true) {
             try {
-                removeAllButton = driver.findElement(By.xpath(removeAllButtonXpath1));
+                driver.findElement(By.xpath(removeAllButtonXpath1));
             } catch (NoSuchElementException e) {
                 driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
                 return;
             }
 
-            scrollToElement(removeAllButton);
-
             WebDriverWait wait = new WebDriverWait(driver, 10);
-            wait.until(ExpectedConditions.elementToBeClickable(removeAllButton));
+            wait.until((ExpectedCondition<Boolean>) driver -> {
+                try {
+                    WebElement removeAllButton = driver.findElement(By.xpath(removeAllButtonXpath1));
+                    removeAllButton.click();
+                    try {
+                        driver.findElement(By.xpath(removingInfoCloseButtonXpath));
+                        return true;
+                    } catch (NoSuchElementException e) {
+                        return false;
+                    }
+                } catch (WebDriverException e) {
+                    return false;
+                }
+            });
 
-            try {
-                removeAllButton.click();
-            } catch (WebDriverException e) {
-                Actions actions = new Actions(driver);
-                actions.moveToElement(removeAllButton).click().build().perform();
-            }
-
-            try {
-                removingInfoCloseButton = driver.findElement(By.xpath
-                        (removingInfoCloseButtonXpath));
-            } catch (Exception e) {
-                driver.findElement(By.xpath(removeAllButtonXpath2)).click();
-                removingInfoCloseButton = driver.findElement(By.xpath
-                        (removingInfoCloseButtonXpath));
-            }
-
-            waitVisibility(removingInfoCloseButton);
-
-            try {
-                removingInfoCloseButton.click();
-            } catch (WebDriverException e) {
-                JavascriptExecutor executor = (JavascriptExecutor) driver;
-                executor.executeScript("arguments[0].click()", removingInfoCloseButton);
-            }
+            wait.until((ExpectedCondition<Boolean>) driver -> {
+                WebElement removingInfoCloseButton = driver.findElement(By.xpath(removingInfoCloseButtonXpath));
+                waitVisibility(removingInfoCloseButton);
+                try {
+                    removingInfoCloseButton.click();
+                    return true;
+                } catch (WebDriverException e) {
+                    return false;
+                }
+            });
         }
     }
 

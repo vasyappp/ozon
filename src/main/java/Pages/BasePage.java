@@ -2,10 +2,7 @@ package Pages;
 
 import Steps.BaseSteps;
 import org.junit.Assert;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -41,6 +38,7 @@ public class BasePage {
      */
     public void fillField(WebElement field, String value) {
         scrollToElement(field);
+        click(field);
         field.clear();
         field.sendKeys(value);
         field.sendKeys(Keys.ENTER);
@@ -104,7 +102,7 @@ public class BasePage {
     public void click(WebElement element) {
         try {
             element.click();
-        } catch (Exception e) {
+        } catch (WebDriverException e) {
             BaseSteps.closePopup();
             element.click();
         }

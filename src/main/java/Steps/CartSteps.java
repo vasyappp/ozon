@@ -27,10 +27,7 @@ public class CartSteps {
         WebDriverWait wait = new WebDriverWait(BaseSteps.getDriver(), 10);
 
         try {
-            wait.until((ExpectedCondition<Boolean>) driver -> {
-                Boolean isCartEmpty = new CartPage().isCartEmpty();
-                return isCartEmpty;
-            });
+            wait.until((ExpectedCondition<Boolean>) driver -> new CartPage().isCartEmpty());
         } catch (TimeoutException e) {
             Assert.fail("Корзина не пуста");
         }
