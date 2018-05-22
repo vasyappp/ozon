@@ -8,7 +8,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -82,6 +81,13 @@ public class BasePage {
         waitVisibility(element, 10);
     }
 
+    /**
+     * Метод проверяет, присутствует ли элемент на странице и отображен ли он
+     *
+     * @param element Искомый элемент
+     *
+     * @return true, если элемент отображен, false в обратном случае
+     */
     public boolean isElementPresent(WebElement element) {
         try {
             driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);

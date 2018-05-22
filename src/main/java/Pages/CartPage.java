@@ -3,7 +3,6 @@ package Pages;
 import Utils.Cart;
 import org.junit.Assert;
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -27,6 +26,12 @@ public class CartPage extends BasePage {
     @FindBy(xpath = ".//div[contains(@class, 'bPageTitle')]/span")
     WebElement title; // Заголовок страницы
 
+    @FindBy(xpath = ".//div[@class = 'eCartSplitItems']//div[contains(@class, 'bCartItem')]")
+    List<WebElement> products;
+
+    @FindBy(xpath = ".//div[@class = 'eCartControls_infoDate']")
+    WebElement date;
+
 
     /**
      * Метод получает список всех названий товаров в корзине
@@ -37,10 +42,7 @@ public class CartPage extends BasePage {
         List<String> productNames = new ArrayList<>();
 
         WebDriverWait wait = new WebDriverWait(driver, 10);
-        wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath(".//div[@class = 'eCartControls_infoDate']"))));
-
-        List<WebElement> products = driver.findElements(By.xpath
-                (".//div[@class = 'eCartSplitItems']//div[contains(@class, 'bCartItem')]"));
+        wait.until(ExpectedConditions.visibilityOf(date));
 
         for (WebElement product : products) {
             String productName = product.findElement(By.xpath
@@ -75,46 +77,51 @@ public class CartPage extends BasePage {
      *
      */
     public void removeAll() {
-        String removeAllButtonXpath = ".//div[@class = 'eCartControls_buttons']";
-        String removingInfoCloseButtonXpath = ".//div[@class = 'eRemovedCartItems_removeAll jsRemoveAll']";
-
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
         while (true) {
-            try {
-                driver.findElement(By.xpath(removeAllButtonXpath));
-            } catch (NoSuchElementException e) {
-                driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
+            if (!isElementPresent(removeAllButton))
                 return;
-            }
 
-            WebDriverWait wait = new WebDriverWait(driver, 10);
-            wait.until((ExpectedCondition<Boolean>) driver -> {
-                try {
-                    WebElement removeAllButton = driver.findElement(By.xpath(removeAllButtonXpath));
-                    removeAllButton.click();
-                    try {
-                        driver.findElement(By.xpath(removingInfoCloseButtonXpath));
-                        return true;
-                    } catch (NoSuchElementException e) {
-                        return false;
-                    }
-                } catch (WebDriverException e) {
-                    return false;
-                }
-            });
+            removeAllClick();
 
-            wait.until((ExpectedCondition<Boolean>) driver -> {
-                WebElement removingInfoCloseButton = driver.findElement(By.xpath(removingInfoCloseButtonXpath));
-                waitVisibility(removingInfoCloseButton);
-                try {
-                    removingInfoCloseButton.click();
-                    return true;
-                } catch (WebDriverException e) {
-                    return false;
-                }
-            });
+            closeInfoClick();
         }
+    }
+
+    /**
+     * Метод нажимает кнопку Корзины "Удалить все"
+     */
+    private void removeAllClick() {
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+
+        wait.until((ExpectedCondition<Boolean>) driver -> {
+            try {
+                removeAllButton.click();
+                if (isElementPresent(removingInfoCloseButton))
+                    return true;
+                else
+                    return false;
+            } catch (WebDriverException e) {
+                return false;
+            }
+        });
+    }
+
+    /**
+     * Метод закрывает окно с информацией об удаленных товарах
+     */
+    private void closeInfoClick() {
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+
+        wait.until((ExpectedCondition<Boolean>) driver -> {
+            try {
+                removingInfoCloseButton.click();
+                return true;
+            } catch (WebDriverException e) {
+                return false;
+            }
+        });
     }
 
     /**

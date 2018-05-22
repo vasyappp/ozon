@@ -24,8 +24,8 @@ public class ProductPage extends BasePage {
     @FindBy(xpath = ".//span[@class = 'eOzonStatus_scoreText']")
     WebElement ozonScore; // Количество баллов для начисления
 
-    @FindBy(xpath = ".//div[contains(text(), 'Корзина')]/preceding-sibling::div/div")
-    WebElement actualCartAmount;
+    @FindBy(xpath = ".//div[@class = 'eSaleBlock_centerMessage']")
+    WebElement noProductMessage;
 
 
     /**
@@ -33,23 +33,15 @@ public class ProductPage extends BasePage {
      *
      */
     public void addToCart() {
+        if (isElementPresent(noProductMessage))
+            return;
+
         try {
             addToCartButton.click();
         } catch (WebDriverException e) {
             waitVisibility(ozonScore);
             scrollToElement(ozonScore);
             click(addToCartButton);
-        }
-
-        Integer expectedCartAmount = Cart.getInstance().getProductNames().size() + 1;
-
-        WebDriverWait wait = new WebDriverWait(driver, 10);
-
-        try {
-            wait.until(ExpectedConditions
-                    .attributeToBe(actualCartAmount, "data-count", Integer.toString(expectedCartAmount)));
-        } catch (TimeoutException e) {
-            Assert.fail("Продукт \"" + productName.getText() + "\" не был добавлен в Корзину");
         }
 
         Cart.getInstance().putProductName(productName.getText());
